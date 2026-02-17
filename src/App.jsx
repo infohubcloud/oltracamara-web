@@ -1,22 +1,22 @@
 import React from "react";
-import { Toaster } from "@/components/ui/toaster";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
+
+import { Toaster } from "@/components/ui/toaster";
 import { queryClientInstance } from "@/lib/query-client";
 import NavigationTracker from "@/lib/NavigationTracker";
 import { pagesConfig } from "./pages.config";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider } from "@/lib/AuthContext";
 
 const { Pages, Layout, mainPage } = pagesConfig;
-
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : () => null;
 
 const LayoutWrapper = ({ children, currentPageName }) =>
   Layout ? <Layout currentPageName={currentPageName}>{children}</Layout> : <>{children}</>;
 
-const AppRoutes = () => {
+function AppRoutes() {
   return (
     <Routes>
       <Route
@@ -43,7 +43,7 @@ const AppRoutes = () => {
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
-};
+}
 
 export default function App() {
   return (
