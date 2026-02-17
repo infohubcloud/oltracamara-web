@@ -1,42 +1,23 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useAuth } from './AuthContext';
-import { base44 } from '@/api/base44Client';
-import { pagesConfig } from '@/pages.config';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
+/**
+ * NavigationTracker (Vercel / sin Base44)
+ * - Antes enviaba eventos a Base44.
+ * - En despliegue externo lo dejamos como “no-op” seguro.
+ * - Si quieres, aquí puedes añadir Google Analytics / Plausible, etc.
+ */
 export default function NavigationTracker() {
-    const location = useLocation();
-    const { isAuthenticated } = useAuth();
-    const { Pages, mainPage } = pagesConfig;
-    const mainPageKey = mainPage ?? Object.keys(Pages)[0];
+  const location = useLocation();
 
-    // Log user activity when navigating to a page
-    useEffect(() => {
-        // Extract page name from pathname
-        const pathname = location.pathname;
-        let pageName;
+  useEffect(() => {
+    // Aquí podrías registrar pageviews si usas analytics:
+    // window.gtag?.("event", "page_view", { page_path: location.pathname });
+    // o plausible:
+    // window.plausible?.("pageview", { u: window.location.href });
 
-        if (pathname === '/' || pathname === '') {
-            pageName = mainPageKey;
-        } else {
-            // Remove leading slash and get the first segment
-            const pathSegment = pathname.replace(/^\//, '').split('/')[0];
+    // Por ahora: no hace nada (evita dependencias Base44)
+  }, [location.pathname]);
 
-            // Try case-insensitive lookup in Pages config
-            const pageKeys = Object.keys(Pages);
-            const matchedKey = pageKeys.find(
-                key => key.toLowerCase() === pathSegment.toLowerCase()
-            );
-
-            pageName = matchedKey || null;
-        }
-
-        if (isAuthenticated && pageName) {
-            base44.appLogs.logUserInApp(pageName).catch(() => {
-                // Silently fail - logging shouldn't break the app
-            });
-        }
-    }, [location, isAuthenticated, Pages, mainPageKey]);
-
-    return null;
+  return null;
 }
